@@ -1,6 +1,8 @@
 package com.example
 
 import android.os.Bundle
+import android.content.Intent
+import android.net.Uri
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,10 +17,12 @@ import com.example.ui.RamTvViewModelFactory
 import com.example.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
-
+private val updateUrl =
+    "https://raw.githubusercontent.com/bapujisen8-bk/ram-tv/main/version.json"
     private lateinit var ramTvViewModel: RamTvViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        checkForUpdate()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
@@ -60,4 +64,40 @@ class MainActivity : ComponentActivity() {
         }
         return super.onKeyDown(keyCode, event)
     }
+}
+private fun checkForUpdate() {
+        Thread {
+                try {
+                            val url = java.net.URL(updateUrl)
+                                        val connection = url.openConnection()
+                                                    val json = connection.getInputStream()
+                                                                    .bufferedReader()
+                                                                                    .use { it.readText() }
+
+                                                                                                val obj = org.json.JSONObject(json)
+                                                                                                            val latestCode = obj.getInt("versionCode")
+                                                                                                                        val apkUrl = obj.getString("apkUrl")
+
+                                                                                                                                    if (latestCode > BuildConfig.APP_VERSION_CODE) {
+                                                                                                                                                    runOnUiThread {
+                                                                                                                                                                        android.app.AlertDialog.Builder(this)
+                                                                                                                                                                                                .setTitle(obj.optString("title", "Update Available"))
+                                                                                                                                                                                                                        .setMessage(obj.optString("description", "New update available"))
+                                                                                                                                                                                                                                                .setPositiveButton("UPDATE") { _, _ ->
+                                                                                                                                                                                                                                                                            startActivity(
+                                                                                                                                                                                                                                                                                                            Intent(
+                                                                                                                                                                                                                                                                                                                                                Intent.ACTION_VIEW,
+                                                                                                                                                                                                                                                                                                                                                                                    Uri.parse(apkUrl)
+                                                                                                                                                                                                                                                                                                                                                                                                                    )
+                                                                                                                                                                                                                                                                                                                                                                                                                                                )
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                .setNegativeButton("LATER", null)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        .show()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            } catch (e: Exception) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        e.printStackTrace()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }.start()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
 }
