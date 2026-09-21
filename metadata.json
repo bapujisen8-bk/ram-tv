@@ -1,0 +1,6 @@
+{
+  "name": "RaM Tv",
+  "description": "RaM Tv - 400+ Free-To-Air Live TV channels across India and Odisha: Odia, Movies, News, Sports, Music, Kids cartoons, Devotional, and Multilingual Regional channels with logos and TV remote dialing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
