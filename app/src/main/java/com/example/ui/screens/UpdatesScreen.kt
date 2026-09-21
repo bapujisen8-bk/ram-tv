@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.DownloadDone
@@ -68,6 +69,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.model.UpdateInfo
 import com.example.ui.theme.RamBorder
 import com.example.ui.theme.RamCardHover
 import com.example.ui.theme.RamLimeAccent
@@ -99,6 +101,7 @@ fun UpdatesScreen(
     var streamSyncStatus by remember { mutableStateOf("All Odia & India FTA streams synced with backup fallback CDNs") }
     var customUpdateUrl by remember { mutableStateOf(ApkUpdateManager.getCustomUpdateUrl(context)) }
     var isUrlSaved by remember { mutableStateOf(false) }
+    var showJsonTemplate by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = modifier
@@ -684,6 +687,52 @@ fun UpdatesScreen(
                                 fontSize = 11.sp,
                                 lineHeight = 16.sp
                             )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedButton(
+                        onClick = { showJsonTemplate = !showJsonTemplate },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = RamLimeAccent),
+                        border = BorderStroke(1.dp, RamLimeAccent.copy(alpha = 0.5f)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(36.dp)
+                            .testTag("toggle_update_info_template_button")
+                    ) {
+                        Icon(
+                            Icons.Default.Code,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (showJsonTemplate) "Hide UpdateInfo.json Template" else "View UpdateInfo.json Template (Updateinfo.kt)",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    if (showJsonTemplate) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = Color(0xFF0F1510),
+                            border = BorderStroke(1.dp, RamBorder)
+                        ) {
+                            Column(modifier = Modifier.padding(10.dp)) {
+                                Text(
+                                    text = UpdateInfo.getSampleJsonTemplate(
+                                        apkDownloadUrl = customUpdateUrl.ifBlank { "https://your-server.com/RaMTv_v2.1.apk" }
+                                    ),
+                                    color = RamLimeAccent,
+                                    fontSize = 11.sp,
+                                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                                    lineHeight = 15.sp
+                                )
+                            }
                         }
                     }
                 }

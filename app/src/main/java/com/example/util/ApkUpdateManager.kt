@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Environment
 import androidx.core.content.FileProvider
 import com.example.BuildConfig
+import com.example.model.UpdateInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -121,8 +122,8 @@ object ApkUpdateManager {
     }
 
     /**
-     * Downloads an APK from an online remote URL (e.g., GitHub Release, Google Drive direct link, Firebase)
-     * with streaming progress reporting and automatic cleaning.
+     * Downloads an APK from an online remote URL (e.g., GitHub Release, Google Drive direct link, Firebase,
+     * or an update_info.json URL) with streaming progress reporting and automatic cleaning.
      */
     suspend fun downloadApkFromUrl(
         context: Context,
@@ -132,8 +133,22 @@ object ApkUpdateManager {
         onProgress(0.10f, "Cleaning older APK cache...")
         cleanOldApkFiles(context)
 
+        // If URL points to an update_info JSON, fetch the direct APK URL from UpdateInfo
+        val finalUrl = if (urlStr.endsWith(".json", ignoreCase = true) || urlStr.contains("update_info", ignoreCase = true)) {
+            onProgress(0.15f, "Fetching UpdateInfo metadata...")
+            val result = UpdateInfo.fetchFromRemoteUrl(urlStr)
+            val info = result.getOrNull()
+            if (info != null && info.apkUrl.isNotBlank()) {
+                info.apkUrl
+            } else {
+                urlStr
+            }
+        } else {
+            urlStr
+        }
+
         onProgress(0.20f, "Connecting to APK update link...")
-        val url = java.net.URL(urlStr)
+        val url = java.net.URL(finalUrl)
         val conn = url.openConnection() as java.net.HttpURLConnection
         conn.connectTimeout = 15000
         conn.readTimeout = 35000

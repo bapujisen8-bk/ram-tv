@@ -17,12 +17,12 @@ android {
     applicationId = "com.aistudio.livetv.kpwzqd"
     minSdk = 24
     targetSdk = 36
-    versionCode = 3
-    versionName = "2.1"
+    versionCode = 4
+    versionName = "2.2"
 
     buildConfigField("String", "BUILD_TIME", "\"${System.currentTimeMillis()}\"")
-    buildConfigField("String", "APP_VERSION_NAME", "\"2.1\"")
-    buildConfigField("int", "APP_VERSION_CODE", "3")
+    buildConfigField("String", "APP_VERSION_NAME", "\"2.2\"")
+    buildConfigField("int", "APP_VERSION_CODE", "4")
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
